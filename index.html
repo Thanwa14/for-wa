@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Letter For Wa 💌</title>
+    <title>สวนดอกไม้ของวา 🌹💌</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&family=Caveat:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -78,7 +78,7 @@
 
         .heart-seal {
             position: absolute; top: 90px; left: 50%;
-            transform: translateX(-50%); font-size: 3rem; z-index: 5;
+            transform: translateX(-50%); font-size: 3.5rem; z-index: 5;
             animation: pulse 1.5s infinite;
         }
 
@@ -89,11 +89,12 @@
 
         .hint {
             margin-top: 40px; font-size: 1.2rem; color: var(--primary-text);
-            animation: pulse 2s infinite; font-weight: 500;
+            animation: pulse-text 2s infinite; font-weight: 500;
         }
-        @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; } 50% { transform: translateX(-50%) scale(1.1); opacity: 1; } }
+        @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.2); } }
+        @keyframes pulse-text { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
-        /* --- 2. ฉากความทรงจำ (หลัก) --- */
+        /* --- 2. ฉากความทรงจำ --- */
         #memory-scene {
             z-index: 10; display: flex; flex-direction: column;
             align-items: center; width: 100%; max-width: 600px;
@@ -104,12 +105,12 @@
 
         .memory-text {
             font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 400; line-height: 1.6;
-            opacity: 0; transform: translateY(30px) scale(0.95);
+            opacity: 0; transform: translateY(30px);
             transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             color: var(--primary-text); text-align: center; padding: 0 20px;
         }
-        .memory-text.active { opacity: 1; transform: translateY(0) scale(1); }
-        .special-font { font-family: 'Caveat', cursive; font-size: clamp(2.5rem, 7vw, 4rem); color: var(--env-flap); }
+        .memory-text.active { opacity: 1; transform: translateY(0); }
+        .special-font { font-family: 'Caveat', cursive; font-size: clamp(2.5rem, 7vw, 4.5rem); color: var(--env-flap); }
 
         .btn {
             background: linear-gradient(45deg, var(--env-flap), var(--primary-text));
@@ -117,13 +118,17 @@
             font-size: 1.2rem; font-family: inherit; cursor: pointer;
             box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4); transition: transform 0.3s;
         }
-        .btn:hover { transform: translateY(-3px) scale(1.05); }
+        .btn:hover { transform: scale(1.05); }
 
-        #final-action { margin-top: 3rem; display: none; text-align: center; animation: fadeInUp 1.5s forwards; }
+        #final-action { margin-top: 2rem; display: none; text-align: center; animation: fadeInUp 1.5s forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .particle { position: absolute; top: -10%; pointer-events: none; animation: fall linear forwards; z-index: 1; }
-        @keyframes fall { to { transform: translateY(120vh) rotate(720deg); } }
+        /* --- 3. ดอกไม้และหัวใจเต็มจอ --- */
+        .particle {
+            position: absolute; top: -10%; pointer-events: none;
+            animation: fall linear forwards; z-index: 10;
+        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
         #player { position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; top: 0; left: 0; }
     </style>
 </head>
@@ -137,45 +142,37 @@
             <div class="flap"></div>
             <div class="heart-seal">💖</div>
         </div>
-        <p class="hint" id="hint-text">มีจดหมายส่งถึงวา... แตะเพื่อเปิดอ่านนะครับ</p>
+        <p class="hint" id="hint-text">มีจดหมายและดอกไม้มาส่งให้วา... แตะเปิดนะครับ</p>
     </main>
 
     <div id="player"></div>
 
     <section id="memory-scene">
-        <div style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
+        <div style="min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
             <p id="display-text" class="memory-text"></p>
         </div>
         
         <div id="final-action">
-            <p style="margin-bottom: 1.5rem; font-size: 1.2rem; color: #594d4d;">วันนี้เป็นวันที่ดีที่สุดเลย ขอบคุณนะวา</p>
-            <button class="btn" onclick="app.finishSurprise()">รักที่สุดเลยคับ 💖</button>
+            <p style="margin-bottom: 1.5rem; font-size: 1.2rem; color: #594d4d;">วาคือของขวัญที่ดีที่สุดของเค้าเลยนะ</p>
+            <button class="btn" onclick="app.finishSurprise()">รักวานะคับ 💖</button>
         </div>
     </section>
 
     <script>
         const app = {
-            config: { videoId: 'mGUjVbsYG6E', textSpeed: 4000 },
+            config: { videoId: 'mGUjVbsYG6E', textSpeed: 4500, maxParticles: 40 },
             
-            // 💖 ข้อมูลความทรงจำ (ข้อความสลับรูปภาพ)
             memories: [
                 { type: 'text', content: "วาครับ..." },
-                { type: 'text', content: "จดหมายฉบับนี้ส่งมาเพื่อวาคนเดียวเลยนะ" },
-                
-                // รูปที่ 1 (จาก image_5.png)
-                { type: 'image', content: "image_5.png" },
-                
-                { type: 'text', content: "วันนี้เป็นวันที่ดีจังเลย" },
-                { type: 'text', content: "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ" },
-                { type: 'text', content: "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ" },
-                
-                // รูปที่ 2 (จาก image_6.png)
-                { type: 'image', content: "image_6.png" },
-
-                { type: 'text', content: "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย" },
-                { type: 'text', content: "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย" },
-                { type: 'text', content: "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ" },
-                { type: 'text', content: "<span class='special-font'>Happy Valentine's Day, My Love.</span>" }
+                { type: 'text', content: "เห็นคนอื่นได้ดอกไม้กัน วาก็อยากได้ใช่ไหม?" },
+                { type: 'text', content: "ถึงปีนี้เค้าจะยังไปส่งดอกไม้ให้วาด้วยตัวเองไม่ได้..." },
+                { type: 'image', content: "image_5.png" }, // รูปวา
+                { type: 'text', content: "แต่เค้าตั้งใจทำ 'สวนดอกไม้ดิจิทัล' นี้มาให้วานะ" },
+                { type: 'text', content: "ดอกไม้ในจอนี้... จะไม่มีวันเหี่ยว เหมือนความรักของเค้าเลย" },
+                { type: 'image', content: "image_6.png" }, // รูปวาวา
+                { type: 'text', content: "ขอบคุณนะที่รอเค้า และอยู่ข้างกันเสมอ" },
+                { type: 'text', content: "สัญญาว่าปีหน้า จะเอาช่อโตๆ ไปให้ด้วยตัวเองแน่นอน" },
+                { type: 'text', content: "<span class='special-font'>Happy Valentine's Day, My Wa.</span>" }
             ],
             
             currentIndex: 0,
@@ -185,7 +182,7 @@
             init: function() {
                 const style = document.createElement('style');
                 style.innerHTML = `
-                    .memory-img { max-width: 85%; max-height: 40vh; border-radius: 15px; box-shadow: 0 10px 20px rgba(255, 77, 109, 0.3); opacity: 0; transform: scale(0.9); transition: all 1s ease; display: none; margin: 0 auto; }
+                    .memory-img { max-width: 85%; max-height: 45vh; border-radius: 20px; box-shadow: 0 15px 30px rgba(255, 77, 109, 0.4); opacity: 0; transform: scale(0.9); transition: all 1s ease; display: none; margin: 0 auto; }
                     .memory-img.active { opacity: 1; transform: scale(1); display: block; }
                 `;
                 document.head.appendChild(style);
@@ -201,32 +198,31 @@
                         playerVars: { 'autoplay': 0, 'controls': 0, 'playsinline': 1, 'loop': 1, 'playlist': this.config.videoId }
                     });
                 };
+
+                // เริ่มโปรยดอกไม้ตั้งแต่เปิดเว็บ (พายุเบาๆ)
+                setInterval(() => this.createParticle(), 300);
             },
 
             openLetter: function() {
                 if (this.isOpened) return;
                 this.isOpened = true;
-
                 document.getElementById('envelope').classList.add('open');
                 document.getElementById('hint-text').style.display = 'none';
 
                 if (this.player && typeof this.player.playVideo === 'function') {
-                    this.player.unMute();
-                    this.player.setVolume(100);
-                    this.player.playVideo();
+                    this.player.unMute(); this.player.setVolume(100); this.player.playVideo();
                 }
 
                 setTimeout(() => {
                     const scene1 = document.getElementById('delivery-scene');
                     const scene2 = document.getElementById('memory-scene');
-                    
                     scene1.style.opacity = '0';
-                    
                     setTimeout(() => {
                         scene1.style.display = 'none';
                         scene2.classList.add('visible');
                         this.showNextMemory();
-                        setInterval(() => this.createParticle(), 400);
+                        // เพิ่มพายุดอกไม้ให้หนักขึ้นหลังเปิดจดหมาย
+                        setInterval(() => this.createParticle(), 150);
                     }, 1000);
                 }, 2500);
             },
@@ -242,44 +238,42 @@
                     
                     setTimeout(() => {
                         const item = this.memories[this.currentIndex];
-                        
                         if (item.type === 'text') {
                             textEl.innerHTML = item.content;
-                            textEl.style.display = 'block';
-                            imgEl.style.display = 'none';
+                            textEl.style.display = 'block'; imgEl.style.display = 'none';
                             setTimeout(() => textEl.classList.add('active'), 50);
                         } else if (item.type === 'image') {
                             imgEl.src = item.content;
-                            imgEl.style.display = 'block';
-                            textEl.style.display = 'none';
+                            imgEl.style.display = 'block'; textEl.style.display = 'none';
                             setTimeout(() => imgEl.classList.add('active'), 50);
                         }
-                        
                         this.currentIndex++;
                         const delay = item.type === 'image' ? 5000 : this.config.textSpeed;
                         setTimeout(() => this.showNextMemory(), delay);
                     }, 1000);
                 } else {
-                    textEl.style.display = 'none';
-                    imgEl.style.display = 'none';
+                    textEl.style.display = 'none'; imgEl.style.display = 'none';
                     finalAction.style.display = 'block';
                 }
             },
 
             createParticle: function() {
+                const particles = ['🌸', '💖', '🌹', '✨', '🌷']; // รวมดอกไม้และหัวใจ
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                particle.innerHTML = Math.random() > 0.6 ? '🌸' : '💖';
+                particle.innerHTML = particles[Math.floor(Math.random() * particles.length)];
                 particle.style.left = `${Math.random() * 100}vw`;
-                particle.style.animationDuration = `${Math.random() * 3 + 4}s`;
-                particle.style.opacity = (Math.random() * 0.5 + 0.3).toFixed(2);
-                particle.style.fontSize = `${Math.random() * 1.5 + 1}rem`;
+                const size = Math.random() * 1.5 + 1; // ขนาด 1 - 2.5rem
+                particle.style.fontSize = `${size}rem`;
+                const duration = Math.random() * 4 + 4; // ตกช้าๆ 4-8 วินาที
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = (Math.random() * 0.6 + 0.4).toFixed(2);
                 document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 7000);
+                setTimeout(() => particle.remove(), duration * 1000);
             },
 
             finishSurprise: function() {
-                alert('รักกที่สูดดดดดดดดดดดดดดดดดดดดดดดดดด 💖');
+                alert('รักวานะครับคนเก่ง กลับไปคุยกับเค้าในแชทนะ 💖');
                 window.close(); window.location.href = 'instagram://';
             }
         };
@@ -287,4 +281,3 @@
     </script>
 </body>
 </html>
-
