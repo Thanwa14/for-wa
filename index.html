@@ -23,7 +23,7 @@
             min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
-            perspective: 1200px; /* เพิ่มมิติความลึกให้ 3D */
+            perspective: 1200px;
         }
 
         /* --- 1. ฉากซองจดหมาย 3D --- */
@@ -32,25 +32,21 @@
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             z-index: 100;
-            transition: opacity 1s ease 1s; /* เฟดออกช้าๆ หลังจากจดหมายออก */
+            transition: opacity 1s ease 1s;
         }
         
         .envelope-wrapper {
             position: relative; width: 320px; height: 200px;
-            cursor: pointer;
-            transition: transform 0.4s;
+            cursor: pointer; transition: transform 0.4s;
         }
         .envelope-wrapper:hover { transform: translateY(-10px); }
 
-        /* ตัวซองจดหมายด้านหลัง */
         .envelope {
             position: absolute; width: 100%; height: 100%;
-            background-color: var(--env-back);
-            border-radius: 10px;
+            background-color: var(--env-back); border-radius: 10px;
             box-shadow: 0 20px 40px rgba(255, 77, 109, 0.3);
         }
 
-        /* กระดาษจดหมายข้างใน */
         .letter {
             position: absolute; top: 10px; left: 10px;
             width: 300px; height: 180px;
@@ -59,50 +55,36 @@
             font-family: 'Caveat', cursive; font-size: 2rem; color: var(--primary-text);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             z-index: 2;
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s; /* รอให้ฝาเปิดก่อนแล้วค่อยเด้งขึ้น */
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
         }
 
-        /* ซองจดหมายด้านหน้า (พับเป็นสามเหลี่ยม) */
         .front {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
             border-left: 160px solid var(--env-front-left);
             border-right: 160px solid var(--env-front-right);
             border-bottom: 100px solid var(--env-front-bottom);
-            border-top: 100px solid transparent;
-            border-radius: 0 0 10px 10px;
+            border-top: 100px solid transparent; border-radius: 0 0 10px 10px;
             z-index: 3; pointer-events: none;
         }
 
-        /* ฝาพับซองจดหมาย (Flap) */
         .flap {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border-left: 160px solid transparent;
-            border-right: 160px solid transparent;
-            border-top: 110px solid var(--env-flap);
-            border-bottom: 90px solid transparent;
+            border-left: 160px solid transparent; border-right: 160px solid transparent;
+            border-top: 110px solid var(--env-flap); border-bottom: 90px solid transparent;
             transform-origin: top;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.3s;
             z-index: 4;
         }
 
-        /* ตราประทับหัวใจ */
         .heart-seal {
             position: absolute; top: 90px; left: 50%;
-            transform: translateX(-50%);
-            font-size: 3rem; z-index: 5;
+            transform: translateX(-50%); font-size: 3rem; z-index: 5;
             animation: pulse 1.5s infinite;
         }
 
-        /* --- เอฟเฟกต์ตอนกดเปิดซอง (WOW Factor) --- */
-        .envelope-wrapper.open .flap {
-            transform: rotateX(180deg); /* พับฝาขึ้นแบบ 3 มิติ */
-            z-index: 1; /* เอาฝาไปซ่อนหลังจดหมาย */
-        }
+        .envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 1; }
         .envelope-wrapper.open .heart-seal { display: none; }
-        .envelope-wrapper.open .letter {
-            transform: translateY(-120px) scale(1.1); /* ดึงจดหมายขึ้นมา */
-            z-index: 5;
-        }
+        .envelope-wrapper.open .letter { transform: translateY(-120px) scale(1.1); z-index: 5; }
         .envelope-wrapper.open { cursor: default; }
 
         .hint {
@@ -110,7 +92,6 @@
             animation: pulse 2s infinite; font-weight: 500;
         }
         @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; } 50% { transform: translateX(-50%) scale(1.1); opacity: 1; } }
-
 
         /* --- 2. ฉากความทรงจำ (หลัก) --- */
         #memory-scene {
@@ -134,15 +115,13 @@
             background: linear-gradient(45deg, var(--env-flap), var(--primary-text));
             color: white; border: none; padding: 14px 40px; border-radius: 50px;
             font-size: 1.2rem; font-family: inherit; cursor: pointer;
-            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4);
-            transition: transform 0.3s;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4); transition: transform 0.3s;
         }
         .btn:hover { transform: translateY(-3px) scale(1.05); }
 
         #final-action { margin-top: 3rem; display: none; text-align: center; animation: fadeInUp 1.5s forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ดอกไม้โปรย */
         .particle { position: absolute; top: -10%; pointer-events: none; animation: fall linear forwards; z-index: 1; }
         @keyframes fall { to { transform: translateY(120vh) rotate(720deg); } }
         #player { position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; top: 0; left: 0; }
@@ -164,7 +143,7 @@
     <div id="player"></div>
 
     <section id="memory-scene">
-        <div style="min-height: 250px; display: flex; align-items: center;">
+        <div style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
             <p id="display-text" class="memory-text"></p>
         </div>
         
@@ -176,23 +155,45 @@
 
     <script>
         const app = {
-            config: { videoId: 'mGUjVbsYG6E', textSpeed: 3500 },
+            config: { videoId: 'mGUjVbsYG6E', textSpeed: 4000 },
+            
+            // 💖 ไฮไลท์: สลับข้อความและรูปภาพได้ที่นี่!
             memories: [
-                "วาครับ...", 
-                "จดหมายฉบับนี้ส่งมาเพื่อวาคนเดียวเลยนะ", 
-                "วันนี้เป็นวันที่ดีจังเลย", 
-                "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ", 
-                "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ", 
-                "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย", 
-                "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย", 
-                "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ", 
-                "<span class='special-font'>Happy Valentine's Day, My Love.</span>"
+                { type: 'text', content: "วาครับ..." }, 
+                { type: 'text', content: "จดหมายฉบับนี้ส่งมาเพื่อวาคนเดียวเลยนะ" }, 
+                
+                // --- 🖼️ ใส่รูปตรงนี้ (เอา // ข้างหน้าออก แล้วเปลี่ยนลิงก์) ---
+                // { type: 'image', content: "https://i.imgur.com/เปลี่ยนลิงก์รูปที่นี่.jpg" },
+                
+                { type: 'text', content: "วันนี้เป็นวันที่ดีจังเลย" }, 
+                { type: 'text', content: "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ" }, 
+                { type: 'text', content: "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ" }, 
+                
+                // --- 🖼️ ใส่รูปตรงนี้ (เอา // ข้างหน้าออก แล้วเปลี่ยนลิงก์) ---
+                // { type: 'image', content: "https://i.imgur.com/เปลี่ยนลิงก์รูปที่นี่.jpg" },
+
+                { type: 'text', content: "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย" }, 
+                { type: 'text', content: "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย" }, 
+                { type: 'text', content: "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ" }, 
+                { type: 'text', content: "<span class='special-font'>Happy Valentine's Day, My Love.</span>" }
             ],
+            
             currentIndex: 0,
             player: null,
             isOpened: false,
 
             init: function() {
+                // เพิ่ม CSS สำหรับรูปภาพ
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    .memory-img { max-width: 85%; max-height: 40vh; border-radius: 15px; box-shadow: 0 10px 20px rgba(255, 77, 109, 0.3); opacity: 0; transform: scale(0.9); transition: all 1s ease; display: none; margin: 0 auto; }
+                    .memory-img.active { opacity: 1; transform: scale(1); display: block; }
+                `;
+                document.head.appendChild(style);
+
+                // แทรกแท็ก <img> รอไว้ใน HTML
+                document.getElementById('display-text').insertAdjacentHTML('afterend', '<img id="display-image" class="memory-img" src="" alt="Memory">');
+
                 const tag = document.createElement('script');
                 tag.src = "https://www.youtube.com/iframe_api";
                 document.head.appendChild(tag);
@@ -204,50 +205,72 @@
                 };
             },
 
-            // เปิดซองจดหมาย 3 มิติ!
             openLetter: function() {
-                if (this.isOpened) return; // ป้องกันการกดซ้ำ
+                if (this.isOpened) return; 
                 this.isOpened = true;
 
-                // 1. สั่งเปิดซองจดหมาย (เล่น Animation ฝาพับ + กระดาษเด้ง)
                 document.getElementById('envelope').classList.add('open');
                 document.getElementById('hint-text').style.display = 'none';
 
-                // 2. เปิดเสียงเพลง (จังหวะกระดาษดึงขึ้นมา เพลงดังพอดี)
                 if (this.player && typeof this.player.playVideo === 'function') {
                     this.player.unMute();
                     this.player.setVolume(100);
                     this.player.playVideo();
                 }
 
-                // 3. รอ 2 วินาทีให้วาดูจดหมายเด้งขึ้นมา แล้วค่อยเปลี่ยนฉาก
                 setTimeout(() => {
                     const scene1 = document.getElementById('delivery-scene');
                     const scene2 = document.getElementById('memory-scene');
                     
-                    scene1.style.opacity = '0'; // フェードアウトฉากซองจดหมาย
+                    scene1.style.opacity = '0'; 
                     
                     setTimeout(() => {
                         scene1.style.display = 'none';
-                        scene2.classList.add('visible'); // โชว์ข้อความ
+                        scene2.classList.add('visible'); 
                         this.showNextMemory();
-                        setInterval(() => this.createParticle(), 400); // เริ่มโปรยดอกไม้
+                        setInterval(() => this.createParticle(), 400); 
                     }, 1000);
                 }, 2500);
             },
 
             showNextMemory: function() {
-                const textElement = document.getElementById('display-text');
+                const textEl = document.getElementById('display-text');
+                const imgEl = document.getElementById('display-image');
                 const finalAction = document.getElementById('final-action');
+
                 if (this.currentIndex < this.memories.length) {
-                    textElement.classList.remove('active');
+                    textEl.classList.remove('active');
+                    imgEl.classList.remove('active');
+                    
                     setTimeout(() => {
-                        textElement.innerHTML = this.memories[this.currentIndex];
-                        textElement.classList.add('active');
+                        const item = this.memories[this.currentIndex];
+                        
+                        if (item.type === 'text') {
+                            // แสดงข้อความ
+                            textEl.innerHTML = item.content;
+                            textEl.style.display = 'block';
+                            imgEl.style.display = 'none';
+                            
+                            // ใช้ setTimeout นิดนึงเพื่อให้ CSS transition ทำงานหลังจาก display: block
+                            setTimeout(() => textEl.classList.add('active'), 50);
+                        } else if (item.type === 'image') {
+                            // แสดงรูปภาพ
+                            imgEl.src = item.content;
+                            imgEl.style.display = 'block';
+                            textEl.style.display = 'none';
+                            
+                            setTimeout(() => imgEl.classList.add('active'), 50);
+                        }
+                        
                         this.currentIndex++;
-                        setTimeout(() => this.showNextMemory(), this.config.textSpeed);
-                    }, 1000);
+                        
+                        // ถ้ารูปจะโชว์นานขึ้น (5วิ) ถ้าข้อความใช้เวลาปกติตามตั้งค่า (4วิ)
+                        const delay = item.type === 'image' ? 5000 : this.config.textSpeed;
+                        setTimeout(() => this.showNextMemory(), delay);
+                    }, 1000); 
                 } else {
+                    textEl.style.display = 'none';
+                    imgEl.style.display = 'none';
                     finalAction.style.display = 'block';
                 }
             },
