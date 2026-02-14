@@ -157,24 +157,24 @@
         const app = {
             config: { videoId: 'mGUjVbsYG6E', textSpeed: 4000 },
             
-            // 💖 ไฮไลท์: สลับข้อความและรูปภาพได้ที่นี่!
+            // 💖 ข้อมูลความทรงจำ (ข้อความสลับรูปภาพ)
             memories: [
-                { type: 'text', content: "วาครับ..." }, 
-                { type: 'text', content: "จดหมายฉบับนี้ส่งมาเพื่อวาคนเดียวเลยนะ" }, 
+                { type: 'text', content: "วาครับ..." },
+                { type: 'text', content: "จดหมายฉบับนี้ส่งมาเพื่อวาคนเดียวเลยนะ" },
                 
-                // --- 🖼️ ใส่รูปตรงนี้ (เอา // ข้างหน้าออก แล้วเปลี่ยนลิงก์) ---
-                // { type: 'image', content: "https://i.imgur.com/เปลี่ยนลิงก์รูปที่นี่.jpg" },
+                // รูปที่ 1 (จาก image_5.png)
+                { type: 'image', content: "image_5.png" },
                 
-                { type: 'text', content: "วันนี้เป็นวันที่ดีจังเลย" }, 
-                { type: 'text', content: "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ" }, 
-                { type: 'text', content: "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ" }, 
+                { type: 'text', content: "วันนี้เป็นวันที่ดีจังเลย" },
+                { type: 'text', content: "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ" },
+                { type: 'text', content: "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ" },
                 
-                // --- 🖼️ ใส่รูปตรงนี้ (เอา // ข้างหน้าออก แล้วเปลี่ยนลิงก์) ---
-                // { type: 'image', content: "https://i.imgur.com/เปลี่ยนลิงก์รูปที่นี่.jpg" },
+                // รูปที่ 2 (จาก image_6.png)
+                { type: 'image', content: "image_6.png" },
 
-                { type: 'text', content: "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย" }, 
-                { type: 'text', content: "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย" }, 
-                { type: 'text', content: "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ" }, 
+                { type: 'text', content: "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย" },
+                { type: 'text', content: "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย" },
+                { type: 'text', content: "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ" },
                 { type: 'text', content: "<span class='special-font'>Happy Valentine's Day, My Love.</span>" }
             ],
             
@@ -183,7 +183,6 @@
             isOpened: false,
 
             init: function() {
-                // เพิ่ม CSS สำหรับรูปภาพ
                 const style = document.createElement('style');
                 style.innerHTML = `
                     .memory-img { max-width: 85%; max-height: 40vh; border-radius: 15px; box-shadow: 0 10px 20px rgba(255, 77, 109, 0.3); opacity: 0; transform: scale(0.9); transition: all 1s ease; display: none; margin: 0 auto; }
@@ -191,7 +190,6 @@
                 `;
                 document.head.appendChild(style);
 
-                // แทรกแท็ก <img> รอไว้ใน HTML
                 document.getElementById('display-text').insertAdjacentHTML('afterend', '<img id="display-image" class="memory-img" src="" alt="Memory">');
 
                 const tag = document.createElement('script');
@@ -206,7 +204,7 @@
             },
 
             openLetter: function() {
-                if (this.isOpened) return; 
+                if (this.isOpened) return;
                 this.isOpened = true;
 
                 document.getElementById('envelope').classList.add('open');
@@ -222,13 +220,13 @@
                     const scene1 = document.getElementById('delivery-scene');
                     const scene2 = document.getElementById('memory-scene');
                     
-                    scene1.style.opacity = '0'; 
+                    scene1.style.opacity = '0';
                     
                     setTimeout(() => {
                         scene1.style.display = 'none';
-                        scene2.classList.add('visible'); 
+                        scene2.classList.add('visible');
                         this.showNextMemory();
-                        setInterval(() => this.createParticle(), 400); 
+                        setInterval(() => this.createParticle(), 400);
                     }, 1000);
                 }, 2500);
             },
@@ -246,28 +244,21 @@
                         const item = this.memories[this.currentIndex];
                         
                         if (item.type === 'text') {
-                            // แสดงข้อความ
                             textEl.innerHTML = item.content;
                             textEl.style.display = 'block';
                             imgEl.style.display = 'none';
-                            
-                            // ใช้ setTimeout นิดนึงเพื่อให้ CSS transition ทำงานหลังจาก display: block
                             setTimeout(() => textEl.classList.add('active'), 50);
                         } else if (item.type === 'image') {
-                            // แสดงรูปภาพ
                             imgEl.src = item.content;
                             imgEl.style.display = 'block';
                             textEl.style.display = 'none';
-                            
                             setTimeout(() => imgEl.classList.add('active'), 50);
                         }
                         
                         this.currentIndex++;
-                        
-                        // ถ้ารูปจะโชว์นานขึ้น (5วิ) ถ้าข้อความใช้เวลาปกติตามตั้งค่า (4วิ)
                         const delay = item.type === 'image' ? 5000 : this.config.textSpeed;
                         setTimeout(() => this.showNextMemory(), delay);
-                    }, 1000); 
+                    }, 1000);
                 } else {
                     textEl.style.display = 'none';
                     imgEl.style.display = 'none';
@@ -277,7 +268,7 @@
 
             createParticle: function() {
                 const particle = document.createElement('div');
-                particle.classList.add('particle'); 
+                particle.classList.add('particle');
                 particle.innerHTML = Math.random() > 0.6 ? '🌸' : '💖';
                 particle.style.left = `${Math.random() * 100}vw`;
                 particle.style.animationDuration = `${Math.random() * 3 + 4}s`;
