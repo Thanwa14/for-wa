@@ -3,170 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For My Wa 💖</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;400;500&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <title>Surprise for Wa 🎁</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&family=Caveat:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-pink: #ffb3c1;
-            --soft-red: #ff4d6d;
-            --bg-color: #fffafb;
+            --primary-color: #ff4d6d;
+            --secondary-color: #ff8fa3;
+            --bg-color: #fff0f5; /* ปรับสีพื้นหลังให้อ่อนลงนิดนึงให้ดูแพง */
+            --text-color: #594d4d;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            margin: 0; padding: 0;
             background-color: var(--bg-color);
             font-family: 'Kanit', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            color: #594d4d;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; perspective: 1000px;
         }
 
-        #start-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 100;
+        /* --- WOW FACTOR STYLES --- */
+        .overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffd1dc 100%); /* พื้นหลังไล่สีสวยๆ */
+            z-index: 100;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); /* เอฟเฟกต์ตอนหายไปแบบสมูทๆ */
+        }
+        .overlay.hidden {
+            opacity: 0;
+            transform: scale(1.2); /* ขยายใหญ่ขึ้นตอนหายไป */
+            pointer-events: none;
         }
 
-        .heart-fall {
-            position: absolute; top: -10%; user-select: none; pointer-events: none;
-            animation: fall linear forwards;
+        .gift-container {
+            cursor: pointer; text-align: center;
+            animation: float 3s ease-in-out infinite; /* กล่องลอยไปมา */
         }
+        .gift-emoji {
+            font-size: 8rem; display: inline-block;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 10px 15px rgba(255, 77, 109, 0.4)); /* เงาฟุ้งๆ */
+        }
+        .gift-container:hover .gift-emoji { transform: scale(1.1) rotate(5deg); }
+        .gift-hint {
+            margin-top: 20px; font-size: 1.5rem; color: var(--primary-color);
+            font-weight: 500; opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Animation ตอนกดกล่อง */
+        .gift-opening { animation: openGift 0.6s forwards; }
+        @keyframes openGift {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9) rotate(-5deg); } /* หดตัวเตรียมระเบิด */
+            100% { transform: scale(3); opacity: 0; } /* ระเบิดหายไป */
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
-        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-        .container { text-align: center; z-index: 10; padding: 20px; }
-        #memory-box { min-height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        /* --- MAIN CONTENT STYLES --- */
+        .container {
+            z-index: 10; display: flex; flex-direction: column;
+            align-items: center; width: 100%; max-width: 600px;
+            opacity: 0; /* ซ่อนไว้ก่อน */
+            transition: opacity 1s ease-in 0.5s; /* ค่อยๆ โผล่มาหลังจากกล่องระเบิด */
+        }
+        .container.visible { opacity: 1; }
 
         .memory-text {
-            font-size: 1.5rem; font-weight: 400; line-height: 1.6;
-            opacity: 0; transform: translateY(20px); transition: all 1s ease-in-out; color: #ff4d6d;
+            font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 400; line-height: 1.6;
+            opacity: 0; transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1); /* เด้งดึ๋งนิดๆ */
+            color: var(--primary-color); text-align: center; padding: 0 20px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
         }
         .memory-text.active { opacity: 1; transform: translateY(0); }
-        .special-font { font-family: 'Caveat', cursive; font-size: 2.5rem; color: #ff758c; }
+        .special-font { font-family: 'Caveat', cursive; font-size: clamp(2.5rem, 7vw, 4rem); color: var(--secondary-color); }
 
-        #final-action { margin-top: 30px; display: none; animation: fadeIn 2s ease-in forwards; }
-
-        .btn-love {
-            background-color: var(--soft-red); color: white; border: none; padding: 12px 30px;
-            border-radius: 50px; font-size: 1.1rem; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3); transition: 0.3s; text-decoration: none;
+        .btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white; border: none; padding: 14px 36px; border-radius: 50px;
+            font-size: 1.2rem; font-family: inherit; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        .btn-love:hover { transform: scale(1.1); background-color: #ff758c; }
+        .btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 30px rgba(255, 77, 109, 0.6); }
+
+        #final-action { margin-top: 3rem; display: none; text-align: center; animation: fadeInUp 1.5s forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* ปุ่มตอนโหลด (สีเทา) */
-        .btn-loading { background-color: #ccc; cursor: not-allowed; box-shadow: none; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* แก้ไขสำคัญ: ให้อยู่ในจอแต่โปร่งใส (Opacity 0.01) มือถือจะได้ยอมให้เล่นเสียง */
-        #player { position: absolute; top: 0; left: 0; width: 10px; height: 10px; opacity: 0.01; z-index: -10; pointer-events: none; }
+        .particle { position: absolute; top: -10%; pointer-events: none; user-select: none; animation: fall linear forwards; z-index: 1; }
+        @keyframes fall { to { transform: translateY(120vh) rotate(720deg); } }
+        #player { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div id="start-overlay">
-        <h2 style="color: #ff4d6d;">มีเซอร์ไพรส์ให้วาครับ 💖</h2>
-        <button id="start-btn" class="btn-love btn-loading" onclick="startSurprise()" disabled>กำลังเตรียมเพลงโปรด...</button>
-    </div>
+    <main class="overlay" id="start-overlay">
+        <div class="gift-container" onclick="app.openGift(this)">
+            <div class="gift-emoji">🎁</div>
+            <p class="gift-hint">แตะเพื่อเปิดของขวัญของวา...</p>
+        </div>
+    </main>
 
     <div id="player"></div>
 
-    <div class="container">
-        <div id="memory-box">
+    <section class="container" id="main-container">
+        <div id="memory-box" style="min-height: 250px; display: flex; align-items: center;">
             <p id="display-text" class="memory-text"></p>
         </div>
         
         <div id="final-action">
-            <p style="margin-bottom: 20px;">วันนี้เป็นวันที่ดีที่สุดเลย ขอบคุณนะวา</p>
-            <button class="btn-love" onclick="alert('รักกที่สูดดดดดดดดดดดดดดดดดดดดดดดดดด 💖'); window.close(); window.location.href='instagram://';">รักมากๆเลยนะคับ 💖</button>
+            <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">วันนี้เป็นวันที่ดีที่สุดเลย ขอบคุณนะวา</p>
+            <button class="btn" onclick="app.finishSurprise()">รักที่สุดเลยคับ 💖</button>
         </div>
-    </div>
+    </section>
 
     <script>
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
-        var isPlayerReady = false; // ตัวเช็คว่าเพลงพร้อมไหม
-
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '10', // ปรับให้มีขนาดนิดนึงแต่มองไม่เห็น
-                width: '10',
+        const app = {
+            config: {
                 videoId: 'mGUjVbsYG6E',
-                playerVars: {
-                    'autoplay': 0, 'controls': 0, 'showinfo': 0, 'rel': 0, 'loop': 1,
-                    'playsinline': 1, 'playlist': 'mGUjVbsYG6E'
-                },
-                events: {
-                    'onReady': onPlayerReady
+                textSpeed: 3500
+            },
+            memories: [
+                "วาครับ...", "เซอร์ไพรส์! 🎉", "วันนี้เป็นวันที่ดีจังเลยนะ", 
+                "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ", "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ", 
+                "ขอบคุณที่ยังอยู่ด้วยกันในทุกๆวันนะ", "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย", 
+                "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย", "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ", 
+                "<span class='special-font'>Happy Valentine's Day, My Love.</span>"
+            ],
+            currentIndex: 0,
+            player: null,
+
+            init: function() {
+                this.loadYouTubeAPI();
+                setInterval(() => this.createParticle(), 400); // เริ่มโปรยดอกไม้ตั้งแต่หน้าแรกเลย
+            },
+
+            loadYouTubeAPI: function() {
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                document.head.appendChild(tag);
+                window.onYouTubeIframeAPIReady = () => {
+                    this.player = new YT.Player('player', {
+                        height: '1', width: '1', videoId: this.config.videoId,
+                        playerVars: { 'autoplay': 0, 'controls': 0, 'playsinline': 1, 'loop': 1, 'playlist': this.config.videoId }
+                    });
+                };
+            },
+
+            // ฟังก์ชันใหม่: กดเปิดกล่อง!
+            openGift: function(element) {
+                // 1. เล่น Animation กล่องระเบิด
+                element.classList.add('gift-opening');
+
+                // 2. เริ่มเล่นเพลงทันที (แก้ปัญหามือถือ)
+                if (this.player && typeof this.player.playVideo === 'function') {
+                    this.player.unMute(); this.player.setVolume(100); this.player.playVideo();
                 }
-            });
-        }
 
-        // ฟังก์ชันนี้จะทำงานก็ต่อเมื่อ YouTube โหลดเพลงเสร็จ 100%
-        function onPlayerReady(event) {
-            isPlayerReady = true;
-            const btn = document.getElementById('start-btn');
-            btn.innerText = "กดดูตรงนี้เลย 💖"; // เปลี่ยนข้อความปุ่ม
-            btn.classList.remove('btn-loading'); // เปลี่ยนสีปุ่มกลับเป็นสีชมพู
-            btn.disabled = false; // ปลดล็อกให้กดได้
-        }
-
-        function startSurprise() {
-            if (!isPlayerReady) return; // กันเหนียวเผื่อกดรัวๆ
-            
-            document.getElementById('start-overlay').style.display = 'none';
-            
-            // สั่งเล่นเพลงทันทีที่กดปุ่ม
-            player.unMute();
-            player.setVolume(100);
-            player.playVideo();
-            
-            showMemories();
-            setInterval(createHeart, 300);
-        }
-
-        const memories = [
-            "วาครับ...", "วันนี้เป็นวันที่ดีจังเลยนะ", "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ",
-            "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ", "ขอบคุณที่ยังอยู่ด้วยกันในทุกๆวันนะ",
-            "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย", "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย",
-            "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ", "<span class='special-font'>I love you, Wa.</span>"
-        ];
-
-        let currentIndex = 0;
-        const textElement = document.getElementById('display-text');
-        const finalAction = document.getElementById('final-action');
-
-        function showMemories() {
-            if (currentIndex < memories.length) {
-                textElement.classList.remove('active');
+                // 3. รอให้ระเบิดเสร็จ แล้วค่อยๆ เฟดหน้า Overlay ออก
                 setTimeout(() => {
-                    textElement.innerHTML = memories[currentIndex];
-                    textElement.classList.add('active');
-                    currentIndex++;
-                    setTimeout(showMemories, 3500);
-                }, 1000);
-            } else {
-                finalAction.style.display = 'block';
-            }
-        }
+                    document.getElementById('start-overlay').classList.add('hidden');
+                    // 4. แสดงเนื้อหาหลัก
+                    document.getElementById('main-container').classList.add('visible');
+                    this.showNextMemory();
+                }, 600);
+            },
 
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart-fall'); heart.innerHTML = '🌸';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
-            heart.style.opacity = Math.random(); heart.style.fontSize = Math.random() * 20 + 10 + 'px';
-            document.body.appendChild(heart);
-            setTimeout(() => { heart.remove(); }, 5000);
-        }
+            showNextMemory: function() {
+                const textElement = document.getElementById('display-text');
+                const finalAction = document.getElementById('final-action');
+                if (this.currentIndex < this.memories.length) {
+                    textElement.classList.remove('active');
+                    setTimeout(() => {
+                        textElement.innerHTML = this.memories[this.currentIndex];
+                        textElement.classList.add('active');
+                        this.currentIndex++;
+                        setTimeout(() => this.showNextMemory(), this.config.textSpeed);
+                    }, 1000);
+                } else {
+                    finalAction.style.display = 'block';
+                }
+            },
+
+            createParticle: function() {
+                const particle = document.createElement('div');
+                particle.classList.add('particle'); particle.innerHTML = Math.random() > 0.5 ? '🌸' : '💖'; // สลับดอกไม้กับหัวใจ
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.animationDuration = `${Math.random() * 3 + 4}s`;
+                particle.style.opacity = (Math.random() * 0.6 + 0.4).toFixed(2);
+                particle.style.fontSize = `${Math.random() * 1.5 + 1}rem`;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 7000);
+            },
+
+            finishSurprise: function() {
+                alert('รักกที่สูดดดดดดดดดดดดดดดดดดดดดดดดดด 💖');
+                window.close(); window.location.href = 'instagram://';
+            }
+        };
+        window.addEventListener('DOMContentLoaded', () => app.init());
     </script>
 </body>
 </html>
