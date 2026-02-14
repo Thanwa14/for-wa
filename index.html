@@ -24,64 +24,53 @@
             color: #594d4d;
         }
 
-        /* หน้าแรกสำหรับกดเริ่มเพื่ออนุญาตให้เพลงเล่น */
         #start-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 100;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
         }
 
         .heart-fall {
-            position: absolute; top: -10%;
-            user-select: none; pointer-events: none;
+            position: absolute; top: -10%; user-select: none; pointer-events: none;
             animation: fall linear forwards;
         }
 
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
         .container { text-align: center; z-index: 10; padding: 20px; }
-
         #memory-box { min-height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
         .memory-text {
             font-size: 1.5rem; font-weight: 400; line-height: 1.6;
-            opacity: 0; transform: translateY(20px);
-            transition: all 1s ease-in-out;
-            color: #ff4d6d;
+            opacity: 0; transform: translateY(20px); transition: all 1s ease-in-out; color: #ff4d6d;
         }
-
         .memory-text.active { opacity: 1; transform: translateY(0); }
-
         .special-font { font-family: 'Caveat', cursive; font-size: 2.5rem; color: #ff758c; }
 
         #final-action { margin-top: 30px; display: none; animation: fadeIn 2s ease-in forwards; }
 
         .btn-love {
-            background-color: var(--soft-red);
-            color: white; border: none; padding: 12px 30px;
-            border-radius: 50px; font-size: 1.1rem;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
-            transition: 0.3s; text-decoration: none;
+            background-color: var(--soft-red); color: white; border: none; padding: 12px 30px;
+            border-radius: 50px; font-size: 1.1rem; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3); transition: 0.3s; text-decoration: none;
         }
-
         .btn-love:hover { transform: scale(1.1); background-color: #ff758c; }
+        
+        /* ปุ่มตอนโหลด (สีเทา) */
+        .btn-loading { background-color: #ccc; cursor: not-allowed; box-shadow: none; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* แก้ไข 1: ซ่อน YouTube แบบให้มีขนาด 1px มือถือจะได้ไม่บล็อกเสียง */
-        #player { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; top: -100px; }
+        /* แก้ไขสำคัญ: ให้อยู่ในจอแต่โปร่งใส (Opacity 0.01) มือถือจะได้ยอมให้เล่นเสียง */
+        #player { position: absolute; top: 0; left: 0; width: 10px; height: 10px; opacity: 0.01; z-index: -10; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div id="start-overlay">
         <h2 style="color: #ff4d6d;">มีเซอร์ไพรส์ให้วาครับ 💖</h2>
-        <button class="btn-love" onclick="startSurprise()">กดดูตรงนี้เลย</button>
+        <button id="start-btn" class="btn-love btn-loading" onclick="startSurprise()" disabled>กำลังเตรียมเพลงโปรด...</button>
     </div>
 
     <div id="player"></div>
@@ -98,27 +87,22 @@
     </div>
 
     <script>
-        // โหลด YouTube API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         var player;
+        var isPlayerReady = false; // ตัวเช็คว่าเพลงพร้อมไหม
+
         function onYouTubeIframeAPIReady() {
-            // แก้ไข 2: เพิ่มการตั้งค่าเพื่อรองรับมือถือ
             player = new YT.Player('player', {
-                height: '1',
-                width: '1',
-                videoId: 'mGUjVbsYG6E', 
+                height: '10', // ปรับให้มีขนาดนิดนึงแต่มองไม่เห็น
+                width: '10',
+                videoId: 'mGUjVbsYG6E',
                 playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'showinfo': 0,
-                    'rel': 0,
-                    'loop': 1,
-                    'playsinline': 1, // ป้องกันการเด้งเต็มจอใน iOS
-                    'playlist': 'mGUjVbsYG6E' // บังคับให้วนลูป
+                    'autoplay': 0, 'controls': 0, 'showinfo': 0, 'rel': 0, 'loop': 1,
+                    'playsinline': 1, 'playlist': 'mGUjVbsYG6E'
                 },
                 events: {
                     'onReady': onPlayerReady
@@ -126,33 +110,34 @@
             });
         }
 
+        // ฟังก์ชันนี้จะทำงานก็ต่อเมื่อ YouTube โหลดเพลงเสร็จ 100%
         function onPlayerReady(event) {
-            // พร้อมเล่นเพลง
+            isPlayerReady = true;
+            const btn = document.getElementById('start-btn');
+            btn.innerText = "กดดูตรงนี้เลย 💖"; // เปลี่ยนข้อความปุ่ม
+            btn.classList.remove('btn-loading'); // เปลี่ยนสีปุ่มกลับเป็นสีชมพู
+            btn.disabled = false; // ปลดล็อกให้กดได้
         }
 
         function startSurprise() {
-            // ซ่อนหน้า Overlay และเริ่มเล่นเพลง + ข้อความ
+            if (!isPlayerReady) return; // กันเหนียวเผื่อกดรัวๆ
+            
             document.getElementById('start-overlay').style.display = 'none';
-            if (player && typeof player.playVideo === 'function') {
-                // แก้ไข 3: บังคับเปิดเสียงและเร่งเสียงเต็มที่
-                player.unMute();
-                player.setVolume(100);
-                player.playVideo();
-            }
+            
+            // สั่งเล่นเพลงทันทีที่กดปุ่ม
+            player.unMute();
+            player.setVolume(100);
+            player.playVideo();
+            
             showMemories();
             setInterval(createHeart, 300);
         }
 
         const memories = [
-            "วาครับ...",
-            "วันนี้เป็นวันที่ดีจังเลยนะ",
-            "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ",
-            "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ",
-            "ขอบคุณที่ยังอยู่ด้วยกันในทุกๆวันนะ",
-            "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย",
-            "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย",
-            "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ",
-            "<span class='special-font'>I love you, Wa.</span>"
+            "วาครับ...", "วันนี้เป็นวันที่ดีจังเลยนะ", "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ",
+            "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ", "ขอบคุณที่ยังอยู่ด้วยกันในทุกๆวันนะ",
+            "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย", "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย",
+            "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ", "<span class='special-font'>I love you, Wa.</span>"
         ];
 
         let currentIndex = 0;
@@ -166,7 +151,7 @@
                     textElement.innerHTML = memories[currentIndex];
                     textElement.classList.add('active');
                     currentIndex++;
-                    setTimeout(showMemories, 3500); // ความเร็วในการเปลี่ยนข้อความ
+                    setTimeout(showMemories, 3500);
                 }, 1000);
             } else {
                 finalAction.style.display = 'block';
@@ -175,12 +160,10 @@
 
         function createHeart() {
             const heart = document.createElement('div');
-            heart.classList.add('heart-fall');
-            heart.innerHTML = '🌸';
+            heart.classList.add('heart-fall'); heart.innerHTML = '🌸';
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.animationDuration = Math.random() * 3 + 2 + 's';
-            heart.style.opacity = Math.random();
-            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+            heart.style.opacity = Math.random(); heart.style.fontSize = Math.random() * 20 + 10 + 'px';
             document.body.appendChild(heart);
             setTimeout(() => { heart.remove(); }, 5000);
         }
