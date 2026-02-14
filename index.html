@@ -100,6 +100,7 @@
             align-items: center; width: 100%; max-width: 600px;
             opacity: 0; pointer-events: none;
             transition: opacity 2s ease;
+            padding-bottom: 30px; /* เพิ่มพื้นที่ด้านล่างนิดนึง */
         }
         #memory-scene.visible { opacity: 1; pointer-events: all; }
 
@@ -120,7 +121,23 @@
         }
         .btn:hover { transform: scale(1.05); }
 
-        #final-action { margin-top: 2rem; display: none; text-align: center; animation: fadeInUp 1.5s forwards; }
+        /* --- สไตล์สำหรับหน้าสุดท้าย --- */
+        #final-action { 
+            margin-top: 2rem; display: none; text-align: center; 
+            animation: fadeInUp 1.5s forwards;
+            display: flex; flex-direction: column; align-items: center; /* จัดให้อยู่กึ่งกลาง */
+        }
+        /* สไตล์รูปภาพปิดท้าย */
+        .final-img {
+            max-width: 85%; /* กว้างไม่เกิน 85% ของจอ */
+            max-height: 35vh; /* สูงไม่เกิน 35% ของจอ */
+            width: auto; height: auto;
+            border-radius: 20px; /* ขอบมน */
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.5); /* เงาสวยๆ */
+            margin-bottom: 1.5rem; /* เว้นระยะห่างจากข้อความ */
+            object-fit: cover;
+        }
+
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- 3. ดอกไม้และหัวใจเต็มจอ --- */
@@ -152,7 +169,8 @@
             <p id="display-text" class="memory-text"></p>
         </div>
         
-        <div id="final-action">
+        <div id="final-action" style="display: none;"> <img src="image_6.png" alt="My Lovely Wa" class="final-img">
+            
             <p style="margin-bottom: 1.5rem; font-size: 1.2rem; color: #594d4d;">วาคือของขวัญที่ดีที่สุดของเค้าเลยนะ</p>
             <button class="btn" onclick="app.finishSurprise()">รักวานะคับ 💖</button>
         </div>
@@ -199,7 +217,6 @@
                     });
                 };
 
-                // เริ่มโปรยดอกไม้ตั้งแต่เปิดเว็บ (พายุเบาๆ)
                 setInterval(() => this.createParticle(), 300);
             },
 
@@ -221,7 +238,6 @@
                         scene1.style.display = 'none';
                         scene2.classList.add('visible');
                         this.showNextMemory();
-                        // เพิ่มพายุดอกไม้ให้หนักขึ้นหลังเปิดจดหมาย
                         setInterval(() => this.createParticle(), 150);
                     }, 1000);
                 }, 2500);
@@ -253,19 +269,20 @@
                     }, 1000);
                 } else {
                     textEl.style.display = 'none'; imgEl.style.display = 'none';
-                    finalAction.style.display = 'block';
+                    // แสดงหน้าสุดท้าย (รูป + ปุ่ม)
+                    finalAction.style.display = 'flex'; 
                 }
             },
 
             createParticle: function() {
-                const particles = ['🌸', '💖', '🌹', '✨', '🌷']; // รวมดอกไม้และหัวใจ
+                const particles = ['🌸', '💖', '🌹', '✨', '🌷'];
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
                 particle.innerHTML = particles[Math.floor(Math.random() * particles.length)];
                 particle.style.left = `${Math.random() * 100}vw`;
-                const size = Math.random() * 1.5 + 1; // ขนาด 1 - 2.5rem
+                const size = Math.random() * 1.5 + 1;
                 particle.style.fontSize = `${size}rem`;
-                const duration = Math.random() * 4 + 4; // ตกช้าๆ 4-8 วินาที
+                const duration = Math.random() * 4 + 4;
                 particle.style.animationDuration = `${duration}s`;
                 particle.style.opacity = (Math.random() * 0.6 + 0.4).toFixed(2);
                 document.body.appendChild(particle);
@@ -281,5 +298,3 @@
     </script>
 </body>
 </html>
-
-
