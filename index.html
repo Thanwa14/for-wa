@@ -3,148 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surprise for Wa 🎁</title>
+    <title>A Letter For Wa 💌</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&family=Caveat:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #ff4d6d;
-            --secondary-color: #ff8fa3;
-            --bg-color: #fff0f5; /* ปรับสีพื้นหลังให้อ่อนลงนิดนึงให้ดูแพง */
-            --text-color: #594d4d;
+            --env-back: #ffb3c1;
+            --env-front-bottom: #ff99ac;
+            --env-front-left: #ff8fa3;
+            --env-front-right: #ff8fa3;
+            --env-flap: #ff758c;
+            --bg-color: #fff0f5;
+            --primary-text: #ff4d6d;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background-color: var(--bg-color);
             font-family: 'Kanit', sans-serif;
-            color: var(--text-color);
             min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden; perspective: 1000px;
+            overflow: hidden;
+            perspective: 1200px; /* เพิ่มมิติความลึกให้ 3D */
         }
 
-        /* --- WOW FACTOR STYLES --- */
-        .overlay {
+        /* --- 1. ฉากซองจดหมาย 3D --- */
+        #delivery-scene {
             position: fixed; inset: 0;
-            background: linear-gradient(135deg, #fff0f5 0%, #ffd1dc 100%); /* พื้นหลังไล่สีสวยๆ */
-            z-index: 100;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); /* เอฟเฟกต์ตอนหายไปแบบสมูทๆ */
-        }
-        .overlay.hidden {
-            opacity: 0;
-            transform: scale(1.2); /* ขยายใหญ่ขึ้นตอนหายไป */
-            pointer-events: none;
-        }
-
-        .gift-container {
-            cursor: pointer; text-align: center;
-            animation: float 3s ease-in-out infinite; /* กล่องลอยไปมา */
-        }
-        .gift-emoji {
-            font-size: 8rem; display: inline-block;
-            transition: transform 0.3s;
-            filter: drop-shadow(0 10px 15px rgba(255, 77, 109, 0.4)); /* เงาฟุ้งๆ */
-        }
-        .gift-container:hover .gift-emoji { transform: scale(1.1) rotate(5deg); }
-        .gift-hint {
-            margin-top: 20px; font-size: 1.5rem; color: var(--primary-color);
-            font-weight: 500; opacity: 0.8;
-            animation: pulse 2s infinite;
+            z-index: 100;
+            transition: opacity 1s ease 1s; /* เฟดออกช้าๆ หลังจากจดหมายออก */
         }
         
-        /* Animation ตอนกดกล่อง */
-        .gift-opening { animation: openGift 0.6s forwards; }
-        @keyframes openGift {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.9) rotate(-5deg); } /* หดตัวเตรียมระเบิด */
-            100% { transform: scale(3); opacity: 0; } /* ระเบิดหายไป */
+        .envelope-wrapper {
+            position: relative; width: 320px; height: 200px;
+            cursor: pointer;
+            transition: transform 0.4s;
         }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .envelope-wrapper:hover { transform: translateY(-10px); }
+
+        /* ตัวซองจดหมายด้านหลัง */
+        .envelope {
+            position: absolute; width: 100%; height: 100%;
+            background-color: var(--env-back);
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(255, 77, 109, 0.3);
+        }
+
+        /* กระดาษจดหมายข้างใน */
+        .letter {
+            position: absolute; top: 10px; left: 10px;
+            width: 300px; height: 180px;
+            background: white; border-radius: 5px;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Caveat', cursive; font-size: 2rem; color: var(--primary-text);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 2;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s; /* รอให้ฝาเปิดก่อนแล้วค่อยเด้งขึ้น */
+        }
+
+        /* ซองจดหมายด้านหน้า (พับเป็นสามเหลี่ยม) */
+        .front {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            border-left: 160px solid var(--env-front-left);
+            border-right: 160px solid var(--env-front-right);
+            border-bottom: 100px solid var(--env-front-bottom);
+            border-top: 100px solid transparent;
+            border-radius: 0 0 10px 10px;
+            z-index: 3; pointer-events: none;
+        }
+
+        /* ฝาพับซองจดหมาย (Flap) */
+        .flap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 110px solid var(--env-flap);
+            border-bottom: 90px solid transparent;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.3s;
+            z-index: 4;
+        }
+
+        /* ตราประทับหัวใจ */
+        .heart-seal {
+            position: absolute; top: 90px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem; z-index: 5;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* --- เอฟเฟกต์ตอนกดเปิดซอง (WOW Factor) --- */
+        .envelope-wrapper.open .flap {
+            transform: rotateX(180deg); /* พับฝาขึ้นแบบ 3 มิติ */
+            z-index: 1; /* เอาฝาไปซ่อนหลังจดหมาย */
+        }
+        .envelope-wrapper.open .heart-seal { display: none; }
+        .envelope-wrapper.open .letter {
+            transform: translateY(-120px) scale(1.1); /* ดึงจดหมายขึ้นมา */
+            z-index: 5;
+        }
+        .envelope-wrapper.open { cursor: default; }
+
+        .hint {
+            margin-top: 40px; font-size: 1.2rem; color: var(--primary-text);
+            animation: pulse 2s infinite; font-weight: 500;
+        }
+        @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; } 50% { transform: translateX(-50%) scale(1.1); opacity: 1; } }
 
 
-        /* --- MAIN CONTENT STYLES --- */
-        .container {
+        /* --- 2. ฉากความทรงจำ (หลัก) --- */
+        #memory-scene {
             z-index: 10; display: flex; flex-direction: column;
             align-items: center; width: 100%; max-width: 600px;
-            opacity: 0; /* ซ่อนไว้ก่อน */
-            transition: opacity 1s ease-in 0.5s; /* ค่อยๆ โผล่มาหลังจากกล่องระเบิด */
+            opacity: 0; pointer-events: none;
+            transition: opacity 2s ease;
         }
-        .container.visible { opacity: 1; }
+        #memory-scene.visible { opacity: 1; pointer-events: all; }
 
         .memory-text {
             font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 400; line-height: 1.6;
-            opacity: 0; transform: translateY(30px);
-            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1); /* เด้งดึ๋งนิดๆ */
-            color: var(--primary-color); text-align: center; padding: 0 20px;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            opacity: 0; transform: translateY(30px) scale(0.95);
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: var(--primary-text); text-align: center; padding: 0 20px;
         }
-        .memory-text.active { opacity: 1; transform: translateY(0); }
-        .special-font { font-family: 'Caveat', cursive; font-size: clamp(2.5rem, 7vw, 4rem); color: var(--secondary-color); }
+        .memory-text.active { opacity: 1; transform: translateY(0) scale(1); }
+        .special-font { font-family: 'Caveat', cursive; font-size: clamp(2.5rem, 7vw, 4rem); color: var(--env-flap); }
 
         .btn {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white; border: none; padding: 14px 36px; border-radius: 50px;
+            background: linear-gradient(45deg, var(--env-flap), var(--primary-text));
+            color: white; border: none; padding: 14px 40px; border-radius: 50px;
             font-size: 1.2rem; font-family: inherit; cursor: pointer;
             box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
         }
-        .btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 30px rgba(255, 77, 109, 0.6); }
+        .btn:hover { transform: translateY(-3px) scale(1.05); }
 
         #final-action { margin-top: 3rem; display: none; text-align: center; animation: fadeInUp 1.5s forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .particle { position: absolute; top: -10%; pointer-events: none; user-select: none; animation: fall linear forwards; z-index: 1; }
+
+        /* ดอกไม้โปรย */
+        .particle { position: absolute; top: -10%; pointer-events: none; animation: fall linear forwards; z-index: 1; }
         @keyframes fall { to { transform: translateY(120vh) rotate(720deg); } }
-        #player { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        #player { position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; top: 0; left: 0; }
     </style>
 </head>
 <body>
 
-    <main class="overlay" id="start-overlay">
-        <div class="gift-container" onclick="app.openGift(this)">
-            <div class="gift-emoji">🎁</div>
-            <p class="gift-hint">แตะเพื่อเปิดของขวัญของวา...</p>
+    <main id="delivery-scene">
+        <div class="envelope-wrapper" id="envelope" onclick="app.openLetter()">
+            <div class="envelope"></div>
+            <div class="letter">To My Wa...</div>
+            <div class="front"></div>
+            <div class="flap"></div>
+            <div class="heart-seal">💖</div>
         </div>
+        <p class="hint" id="hint-text">มีจดหมายส่งถึงวา... แตะเพื่อเปิดอ่านนะครับ</p>
     </main>
 
     <div id="player"></div>
 
-    <section class="container" id="main-container">
-        <div id="memory-box" style="min-height: 250px; display: flex; align-items: center;">
+    <section id="memory-scene">
+        <div style="min-height: 250px; display: flex; align-items: center;">
             <p id="display-text" class="memory-text"></p>
         </div>
         
         <div id="final-action">
-            <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">วันนี้เป็นวันที่ดีที่สุดเลย ขอบคุณนะวา</p>
+            <p style="margin-bottom: 1.5rem; font-size: 1.2rem; color: #594d4d;">วันนี้เป็นวันที่ดีที่สุดเลย ขอบคุณนะวา</p>
             <button class="btn" onclick="app.finishSurprise()">รักที่สุดเลยคับ 💖</button>
         </div>
     </section>
 
     <script>
         const app = {
-            config: {
-                videoId: 'mGUjVbsYG6E',
-                textSpeed: 3500
-            },
+            config: { videoId: 'mGUjVbsYG6E', textSpeed: 3500 },
             memories: [
-                "วาครับ...", "เซอร์ไพรส์! 🎉", "วันนี้เป็นวันที่ดีจังเลยนะ", 
-                "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ", "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ", 
-                "ขอบคุณที่ยังอยู่ด้วยกันในทุกๆวันนะ", "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย", 
-                "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย", "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ", 
+                "วาครับ...", 
+                "จดหมายฉบับนี้ส่งมาเพื่อวาคนเดียวเลยนะ", 
+                "วันนี้เป็นวันที่ดีจังเลย", 
+                "ขอบคุณนะที่วาเลนไทน์ปีนี้มีวาอยู่ข้างๆ", 
+                "ถึงจะอยู่ไกลกัน แต่ผมจำได้ทุกความทรงจำเลยนะ", 
+                "ผมอยากเป็นรอยยิ้มให้วาในทุกๆ วันเลยยยย", 
+                "ไม่อยากให้วาต้องเศร้าหรืออารมณ์เสียกับอะไรอีกเลย", 
+                "อยู่เป็นความสุขของกันและกันแบบนี้ไปนานๆ นะ", 
                 "<span class='special-font'>Happy Valentine's Day, My Love.</span>"
             ],
             currentIndex: 0,
             player: null,
+            isOpened: false,
 
             init: function() {
-                this.loadYouTubeAPI();
-                setInterval(() => this.createParticle(), 400); // เริ่มโปรยดอกไม้ตั้งแต่หน้าแรกเลย
-            },
-
-            loadYouTubeAPI: function() {
                 const tag = document.createElement('script');
                 tag.src = "https://www.youtube.com/iframe_api";
                 document.head.appendChild(tag);
@@ -156,23 +204,36 @@
                 };
             },
 
-            // ฟังก์ชันใหม่: กดเปิดกล่อง!
-            openGift: function(element) {
-                // 1. เล่น Animation กล่องระเบิด
-                element.classList.add('gift-opening');
+            // เปิดซองจดหมาย 3 มิติ!
+            openLetter: function() {
+                if (this.isOpened) return; // ป้องกันการกดซ้ำ
+                this.isOpened = true;
 
-                // 2. เริ่มเล่นเพลงทันที (แก้ปัญหามือถือ)
+                // 1. สั่งเปิดซองจดหมาย (เล่น Animation ฝาพับ + กระดาษเด้ง)
+                document.getElementById('envelope').classList.add('open');
+                document.getElementById('hint-text').style.display = 'none';
+
+                // 2. เปิดเสียงเพลง (จังหวะกระดาษดึงขึ้นมา เพลงดังพอดี)
                 if (this.player && typeof this.player.playVideo === 'function') {
-                    this.player.unMute(); this.player.setVolume(100); this.player.playVideo();
+                    this.player.unMute();
+                    this.player.setVolume(100);
+                    this.player.playVideo();
                 }
 
-                // 3. รอให้ระเบิดเสร็จ แล้วค่อยๆ เฟดหน้า Overlay ออก
+                // 3. รอ 2 วินาทีให้วาดูจดหมายเด้งขึ้นมา แล้วค่อยเปลี่ยนฉาก
                 setTimeout(() => {
-                    document.getElementById('start-overlay').classList.add('hidden');
-                    // 4. แสดงเนื้อหาหลัก
-                    document.getElementById('main-container').classList.add('visible');
-                    this.showNextMemory();
-                }, 600);
+                    const scene1 = document.getElementById('delivery-scene');
+                    const scene2 = document.getElementById('memory-scene');
+                    
+                    scene1.style.opacity = '0'; // フェードアウトฉากซองจดหมาย
+                    
+                    setTimeout(() => {
+                        scene1.style.display = 'none';
+                        scene2.classList.add('visible'); // โชว์ข้อความ
+                        this.showNextMemory();
+                        setInterval(() => this.createParticle(), 400); // เริ่มโปรยดอกไม้
+                    }, 1000);
+                }, 2500);
             },
 
             showNextMemory: function() {
@@ -193,10 +254,11 @@
 
             createParticle: function() {
                 const particle = document.createElement('div');
-                particle.classList.add('particle'); particle.innerHTML = Math.random() > 0.5 ? '🌸' : '💖'; // สลับดอกไม้กับหัวใจ
+                particle.classList.add('particle'); 
+                particle.innerHTML = Math.random() > 0.6 ? '🌸' : '💖';
                 particle.style.left = `${Math.random() * 100}vw`;
                 particle.style.animationDuration = `${Math.random() * 3 + 4}s`;
-                particle.style.opacity = (Math.random() * 0.6 + 0.4).toFixed(2);
+                particle.style.opacity = (Math.random() * 0.5 + 0.3).toFixed(2);
                 particle.style.fontSize = `${Math.random() * 1.5 + 1}rem`;
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 7000);
